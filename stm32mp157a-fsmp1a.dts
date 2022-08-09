@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+/*
+ * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
+ * Author: Alexandre Torgue <alexandre.torgue@st.com> for STMicroelectronics.
+ */
+
+/dts-v1/;
+
+#include "stm32mp157.dtsi"
+#include "stm32mp15xa.dtsi"
+#include "stm32mp15-pinctrl.dtsi"
+#include "stm32mp15xxaa-pinctrl.dtsi"
+#include "stm32mp15xx-fsmp1x.dtsi"
+/ {
+	model = "HQYJ STM32MP157 FSMP1A Discovery Board";
+	compatible = "st,stm32mp157a-fsmp1a", "st,stm32mp157";
+
+	aliases {
+		ethernet0 = &ethernet0;
+		serial0 = &uart4;
+		serial5 = &usart3;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	reserved-memory {
+		gpu_reserved: gpu@da000000 {
+			reg = <0xda000000 0x4000000>;
+			no-map;
+		};
+
+		optee_memory: optee@0xde000000 {
+			reg = <0xde000000 0x02000000>;
+			no-map;
+		};
+	};
+
+	myled{
+		led1=<&gpioe 10 0>;
+		led2=<&gpiof 10 0>;
+		led3=<&gpioe 8 0>;
+	};
+
+	myirqs{
+		interrupt-parent = <&gpiof>;
+		interrupts = <9 0>,<7 0>,<8 0>;
+		keys=<&gpiof 9 0>,<&gpiof 7 0>,<&gpiof 8 0>;
+		led1=<&gpioe 10 0>;
+		led2=<&gpiof 10 0>;
+		led3=<&gpioe 8 0>;
+	};
+
+	myplatform{
+		compatible = "myplatform";
+		interrupt-parent = <&gpiof>;
+		interrupts =<9 0>;
+		reg=<0x12345678 0x1E>;
+		led1=<&gpioe 10 0>;
+		keys=<&gpiof 9 0>,<&gpiof 7 0>,<&gpiof 8 0>;
+	
+	};
+
+	smart_home_platform{
+		compatible = "my_platform";
+		interrupt-parent = <&gpiof>;
+		interrupts =<9 0>;
+		reg=<0x12345678 0x1E>;
+		led1=<&gpioe 10 0>;
+		bee=<&gpiob 6 0>;
+		keys=<&gpiof 9 0>,<&gpiof 7 0>,<&gpiof 8 0>;
+	
+	};
+
+	my_bee{
+		compatible = "my_bee";
+		interrupt-parent = <&gpiof>;
+		interrupts =<9 0>;
+		reg=<0x12345678 0x1E>;
+		led1=<&gpioe 10 0>;
+		bee=<&gpiob 6 0>;
+		keys=<&gpiof 9 0>,<&gpiof 7 0>,<&gpiof 8 0>;
+	
+	};
+
+
+};
+
+&i2c1{
+	pinctrl-names = "default";
+    pinctrl-0 = <&i2c1_pins_b>;
+    i2c-scl-rising-time-ns = <100>;
+    i2c-scl-falling-time-ns = <7>;
+    status = "okay";
+    /delete-property/dmas;      
+    /delete-property/dma-names;
+
+    si7006@40{
+        compatible = "my_i2c";
+        reg = <0x40>;
+    };
+};
+
+&spi4{
+    pinctrl-names = "default";
+    pinctrl-0 = <&spi4_pins_a>;
+    cs-gpios = <&gpioe 11 0>;
+    status = "okay";
+
+    m74hc595@0{
+        compatible = "my_spi";
+        reg = <0>;
+        spi-max-frequency = <10000000>; //10Mhz
+    };
+};
+
+&optee {
+	status = "okay";
+};
